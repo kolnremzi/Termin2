@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termin Durumu</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
+        #container { text-align: center; padding: 2rem; border-radius: 8px; background-color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #status { font-size: 1.5rem; margin-top: 1rem; }
+        button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Heilbronn Termin Durumu</h1>
+        <button id="fetchButton">Verileri Getir</button>
+        <div id="status">Veriler bekleniyor...</div>
+    </div>
+
+    <script>
+        const fetchButton = document.getElementById('fetchButton');
+        const statusDiv = document.getElementById('status');
+
+        async function getTimeslots() {
+            statusDiv.textContent = 'Veriler alınıyor...';
+            try {
+                const response = await fetch('/api/timeslots');
+                if (!response.ok) {
+                    throw new Error(`HTTP hatası! Durum: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                if (data.error) {
+                    statusDiv.textContent = `Hata: ${data.error}`;
+                } else if (data.message) {
+                    statusDiv.textContent = data.message;
+                } else if (data.length > 0) {
+                    statusDiv.textContent = `Mevcut en yakın tarih: ${data[0].start}`;
+                } else {
+                    statusDiv.textContent = 'Uygun zaman aralığı bulunamadı.';
+                }
+            } catch (error) {
+                console.error('Veri alınırken hata oluştu:', error);
+                statusDiv.textContent = 'Veri alınırken bir hata oluştu.';
+            }
+        }
+
+        fetchButton.addEventListener('click', getTimeslots);
+        getTimeslots(); // Sayfa yüklendiğinde verileri getir
+    </script>
+</body>
+</html>
