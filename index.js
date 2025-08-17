@@ -113,5 +113,6 @@ app.listen(port, () => {
         fetchTimeslots().catch(err => {
             console.error("Periyodik veri çekme hatası:", err.message);
         });
-    }, 3 * 60 * 1000);
+    }, 1 * 60 * 1000);
 });
+
